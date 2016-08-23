@@ -98,6 +98,7 @@ echo 9. (Avanzato) Punti di Giunzione NTFS
 echo. 
 set /p risposta= Che argomento ti interesserebbe approfondire? 
 
+if %risposta% == 0 goto backup
 if %risposta% == 1 goto uno
 if %risposta% == 2 goto due
 if %risposta% == 3 goto tre
