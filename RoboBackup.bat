@@ -264,7 +264,7 @@ echo Il percorso completo in questo caso e' "%userprofile%\Desktop\CARTELLA SUPE
 echo. 
 pause
 echo. 
-echo.  6.2 Escludere piu' directory dal Backup
+echo.  6.2 Escludere piu' directory dal Backup (da modificare)
 echo. 
 echo Per escludere pu' cartelle dal Backup basta semplicemente inserirle assieme separate da uno spazio, nel caso come sopra in cui si vogliono escludere le cartelle "CARTELLA DA ESCLUDERE" e "ALTRA CARTELLA DA ESCLUDERE" situate nel Desktop all'interno della "CARTELLA SUPERIORE" basta indicare "%userprofile%\Desktop\CARTELLA SUPERIORE\CARTELLA DA ESCLUDERE" "%userprofile%\Desktop\CARTELLA SUPERIORE\ALTRA CARTELLA DA ESCLUDERE"
 echo. 
@@ -353,7 +353,7 @@ echo.
 echo Sono state predisposte due opzioni per il backup a seconda del grado di personalizzazione che si desidera ottenere entrambe sono complete variano solamente nelle impostazioni che sono preimpostate nel caso del BACKUP TIPICO vs da definire nel BACKUP PERSONALIZZATO
 
 echo.
-set /p backup_mode= Sono interessato in un backup di tipo TIPICO [0], PERSONALIZZATO[1] 
+if not defined backup_mode set /p backup_mode= Sono interessato in un backup di tipo TIPICO [0], PERSONALIZZATO[1] 
 if %backup_mode% == 1 goto custom_backup else goto typical_backup
 
 rem ----------------------------------------------------------------------------------
@@ -365,12 +365,12 @@ echo.
 echo Qualche domanda preliminare:
 
 echo. 
-set /p move_or_not=- Vorresi COPIARE[0] oppure SPOSTARE[1] i files? Non so [2]: 
+if not defined move_or_not set /p move_or_not=- Vorresi COPIARE[0] oppure SPOSTARE[1] i files? Non so [2]: 
 if %move_or_not% == 1 set op_move= /move
 if %move_or_not% == 2 goto due
 
 echo. 
-set /p my_letter= -Inserisci (solo) la lettera alla quale e' associato l'Hard Disk 
+if not defined my_letter set /p my_letter= -Inserisci (solo) la lettera alla quale e' associato l'Hard Disk 
 set DEST=%my_letter%:\
 
 echo. 
@@ -444,11 +444,11 @@ echo.
 echo Prima di iniziare mi serve qualche informazione preliminare, %user_name%:
 
 echo. 
-set /p my_letter= -Inserisci (solo) la lettera alla quale e' associato l'Hard Disk 
+if not defined my_letter set /p my_letter= -Inserisci (solo) la lettera alla quale e' associato l'Hard Disk 
 set DEST=%my_letter%:\
 
 echo. 
-set /p move_or_not=- Vorresi COPIARE[0] oppure SPOSTARE[1] i files? Non so [2]: 
+if not defined move_or_not set /p move_or_not=- Vorresi COPIARE[0] oppure SPOSTARE[1] i files? Non so [2]: 
 if %move_or_not% == 1 set op_move= /move
 if %move_or_not% == 2 goto due
 
@@ -464,7 +464,7 @@ echo Vuoi aggiungere la data del Backup al nome della cartella nella quale vengo
 echo [!!!] Aggiungendo la data si escludono le opzioni MIRRORING ed ESCLUDI file piu' VECCHI/NUOVI
 
 echo. 
-set /p date_switch= No non aggiungere la data [0] Si aggiungi la data [1] 
+if not defined date_switch set /p date_switch= No non aggiungere la data [0] Si aggiungi la data [1] 
 if %date_switch% == 0 goto date_off 
 if %date_switch% == 1 goto date_on
 
@@ -488,7 +488,7 @@ echo 2. Escludere files piu' NUOVI
 echo 3. Escludere CARTELLE
 
 echo. 
-set /p no_date_esclusion=Inserire il numero corrispondente: 
+if not defined no_date_esclusion set /p no_date_esclusion=Inserire il numero corrispondente: 
 
 if %no_date_esclusion% == 0 goto no_date_mirroring
 if %no_date_esclusion% == 1 set file_excl=/XO
@@ -501,23 +501,65 @@ goto exclusion
 :dir_exclude
 cls
 echo. 
-set /p dir_choice=- Vuoi riguardare la guida e le scorciatoie premi il tasto [1] altrimenti [0] 
+if not defined dir_choice set /p dir_choice= Vuoi riguardare la guida e le scorciatoie premi il tasto [1] altrimenti [0] 
 if %dir_choice% == 1 goto sei
 if %dir_choice% == 0 goto xcl_no_date 
 
 :xcl_no_date
-echo. 
+echo.
+set /p dir_look= Vuoi dare un occhiata alle cartelle? No [0] Si [1]
+if %dir_look% == 0 goto xcls 
+if %dir_look% == 1 goto dir_look_yes
+
+:dir_look_yes
+
+cls
+echo.
+echo Di quale raccolta vuoi vedere le cartelle da escludere?
+echo.
+echo [0] Continua
+echo.
+echo [1] %userprofile%\Desktop
+echo [2] %userprofile%\Documenti
+echo [3] %userprofile%\Download
+echo [4] %userprofile%\Immagini
+echo [5] %userprofile%\Musica
+echo [6] %userprofile%\Video
+echo.
+
+set /p choice_dir= Inserisci il numero corrispondente 
+
+if %choice_dirk% == 0 goto xcls 
+if %choice_dir% == 1 set choice_dir_set=%des%
+if %choice_dir% == 2 set choice_dir_set=%doc%
+if %choice_dir% == 3 set choice_dir_set=%dow%
+if %choice_dir% == 4 set choice_dir_set=%imm%
+if %choice_dir% == 5 set choice_dir_set=%mus%
+if %choice_dir% == 6 set choice_dir_set=%vid%
+
+cd %choice_dir_set%
+dir /B /P /AD
+
+echo.
+set /p return_choice=Vuoi dare un occhiata alle altre raccolte [0] oppure continuare [1] 
+
+if %return_choice% == 0 goto dir_look_yes
+if %return_choice% == 1 goto xclsn
+
+:xclsn
+
+echo.
 echo Elenca il percorso delle cartelle da escludere dal Backup tra "" e separate da uno spazio se piu' di una
 
 echo. 
-set /p directory_excl=- Voglio escludere: 
+if not defined directory_excl set /p directory_excl=- Voglio escludere: 
 set my_directory_excl= /XD %directory_excl%
 goto no_date_mirroring
 
 :no_date_mirroring
 cls
 echo. 
-set /p mirroring= Voglio eseguire il MIRRORING della cartella [0] Voglio ricontrollare quali sono i rischi nella guida [1] no grazie [2]   
+if not defined mirroring set /p mirroring= Voglio eseguire il MIRRORING della cartella [0] Voglio ricontrollare quali sono i rischi nella guida [1] no grazie [2]   
 if %mirroring% == 0 set enable_mirr=/MIR
 if %mirroring% == 1 goto quattro
 goto no_date_multithread
@@ -534,7 +576,7 @@ if %multithread_enable% == 2 goto cinque
 
 :thread_set
 echo. 
-set /p custom_thread= Voglio dedicare un totale di thread uguale a (valore numerico MIN 1 MAX 128):  
+if not defined custom_thread set /p custom_thread= Voglio dedicare un totale di thread uguale a (valore numerico MIN 1 MAX 128):  
 set my_thread=/mt:%custom_thread%
 
 rem .....................................................
@@ -603,7 +645,7 @@ cls
 echo. 
 echo Vuoi ESCLUDERE delle cartelle?
 echo. 
-set /p date_esclusion= Nessuna cartella da escludere [0], escludi cartelle [1] 
+if not defined date_esclusion set /p date_esclusion= Nessuna cartella da escludere [0], escludi cartelle [1] 
 
 if %date_esclusion% == 0 goto date_multithread
 if %date_esclusion% == 1 goto date_dir_exclude
@@ -611,17 +653,54 @@ if %date_esclusion% == 1 goto date_dir_exclude
 
 :date_dir_exclude
 cls
-echo. 
-set /p dir_choice=- Vuoi riguardare la guida e le scorciatoie [1] o procedere [0] 
-if %dir_choice% == 1 goto sei
-if %dir_choice% == 0 goto xcl 
+echo.
+set /p dir_look= Vuoi dare un occhiata alle cartelle? No [0] Si [1]
+if %dir_look% == 0 goto xcls 
+if %dir_look% == 1 goto dir_look_yes
+
+:dir_look_yes
+
+cls
+echo.
+echo Di quale raccolta vuoi vedere le cartelle da escludere?
+echo.
+echo [0] Continua
+echo.
+echo [1] %userprofile%\Desktop
+echo [2] %userprofile%\Documenti
+echo [3] %userprofile%\Download
+echo [4] %userprofile%\Immagini
+echo [5] %userprofile%\Musica
+echo [6] %userprofile%\Video
+echo.
+
+set /p choice_dir= Inserisci il numero corrispondente 
+
+if %choice_dirk% == 0 goto xcls 
+if %choice_dir% == 1 set choice_dir_set=%des%
+if %choice_dir% == 2 set choice_dir_set=%doc%
+if %choice_dir% == 3 set choice_dir_set=%dow%
+if %choice_dir% == 4 set choice_dir_set=%imm%
+if %choice_dir% == 5 set choice_dir_set=%mus%
+if %choice_dir% == 6 set choice_dir_set=%vid%
+
+cd %choice_dir_set%
+dir /B /P /AD
+
+echo.
+set /p return_choice=Vuoi dare un occhiata alle altre raccolte [0] oppure continuare [1] 
+
+if %return_choice% == 0 goto dir_look_yes
+if %return_choice% == 1 goto xcl
 
 :xcl
-echo. 
-echo Elenca il percorso delle cartelle da escludere dal Backup tra "" separate da uno spazio
+
+echo.
+echo Elenca il percorso delle cartelle da escludere dal Backup tra "" e separate da uno spazio se piu' di una
+
 
 echo. 
-set /p directory_excl=- Voglio escludere: 
+if not defined directory_excl set /p directory_excl=- Voglio escludere: 
 set my_directory_excl= /XD %directory_excl%
 goto date_multithread
 
@@ -637,7 +716,7 @@ if %multithread_enable% == 2 goto cinque
 
 :date_thread_set
 echo. 
-set /p custom_thread= Voglio dedicare un totale di thread uguale a (valore numerico MIN 1 MAX 128):  
+if not defined custom_thread set /p custom_thread= Voglio dedicare un totale di thread uguale a (valore numerico MIN 1 MAX 128):  
 set my_thread=/mt:%custom_thread%
 
 rem .....................................................
