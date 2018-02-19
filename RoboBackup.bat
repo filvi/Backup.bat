@@ -5,6 +5,20 @@ rem ----------------------------------------------------------------------------
 rem introduzione
 rem ----------------------------------------------------------------------------------
 
+ECHO.
+ECHO.
+ECHO.
+ECHO          @@@@@@@@@       @@@@@
+ECHO         @@@@@@@@@@      @@@@@
+ECHO        @@@     @@@     @@@
+ECHO       @@@@@@    @@@   @@@
+ECHO      @@@@@@      @@@ @@@
+ECHO     @@@           @@@@@
+ECHO    @@@             @@@
+ECHO.
+ECHO.
+ECHO.
+ECHO.
 echo. --------------------------------------
 echo Programma: RoboBackup
 echo. --------------------------------------
@@ -14,7 +28,16 @@ echo Autore: Filippo Vicari
 echo. --------------------------------------
 echo Bug report info@filippovicari.com
 echo. --------------------------------------
-echo Attenzione questo programma copia tutti i file nelle seguenti cartelle
+
+pause
+cls
+echo. 
+set /p user_name= Prima di iniziare come posso chiamarti? 
+
+cls
+echo Ciao %user_name%, sono la tua Intelligenza Artificiale, facciamo un backup oggi?
+echo.
+echo Devo dirti che per quanto sia intelligente di default faccio il backup delle seguenti cartelle (la maggior parte dei file sono semprte li)
 echo. 
 echo Desktop
 echo Documenti
@@ -22,6 +45,9 @@ echo Download
 echo Immagini
 echo Musica
 echo Video
+echo.
+pause
+
 echo.
 echo In queste cartelle vengono salvati quasi tutti i files
 echo.
@@ -48,21 +74,19 @@ set mus=%userprofile%\Music
 set vid=%userprofile%\Video
 
 echo. 
-set /p user_name= Prima di iniziare come posso chiamarti? 
-
-echo. 
-echo Benvenuto nel programma di Backup di FV.
+echo Benvenuto nel programma di Backup di FV, %user_name%.
 echo. 
 
 :user_choice
 echo. 
-set /p scelta= Ciao %user_name% vuoi dare un occhiata alla guida? [0] o iniziare subito [1]: 
+set /p scelta= Vuoi dare un occhiata alla guida? [0] o iniziare subito [1]: 
 
 if %scelta% == 0 goto guida
 if %scelta% == 1 goto backup
 
+cls
 echo. 
-echo [!!!] ATTENZIONE PARAMETRO DI SCELTA SCORRETTO [!!!]
+echo [!!!] Qualcosa e' andato storto, riproviamo [!!!]
 echo. 
 goto user_choice
 
@@ -221,8 +245,7 @@ echo. -- file1
 echo. -- file2 
 echo. -- file3 
 echo. 
-echo [!!!] ATTENZIONE cartella e contenuto rimossi durante il MIRRORING: non presenti nella cartella di ORIGINE
-echo.  CARTELLA 0000  
+echo.  CARTELLA 0000  [!!!] ATTENZIONE questa cartella e contenuto verranno rimossi durante il MIRRORING: visto che non presenti nella cartella di ORIGINE
 echo. -- file1 
 echo. -- file2 
 echo. -- file3 
@@ -231,7 +254,7 @@ echo.  CARTELLA 3
 echo. -- file1 
 echo. -- file2 
 echo. -- file3 
-echo. -- file4 [!!!] ATTENZIONE file4 rimosso durante il MIRRORING: non presente nella cartella di ORIGINE
+echo. -- file4 [!!!] ATTENZIONE file4 sara' rimosso durante il MIRRORING: in quanto non presente nella cartella di ORIGINE
 echo. 
 echo [!!!] ATTENZIONE L'autore non si assume responsabilita' alcuna per l'eventuale perdita dei file tramite l'utilizzo  
 echo di questa modalita', procedi con questa opzione solamente se sai cosa stai facendo. 
@@ -374,10 +397,12 @@ echo.
 if not defined my_letter set /p my_letter= -Inserisci (solo) la lettera alla quale e' associato l'Hard Disk 
 set DEST=%my_letter%:\
 
+:set_lett
 echo. 
 echo I files verranno copiati in %DEST%
 echo. 
-pause
+set /p lett_corr= E' corretto? [0] No, devo re-inserire la lettera corretta [1] Si 
+if /i %lett_corr% == 0 (goto set_lett) 
 cls
 
 
@@ -453,10 +478,12 @@ if not defined move_or_not set /p move_or_not=- Vorresi COPIARE[0] oppure SPOSTA
 if %move_or_not% == 1 set op_move= /move
 if %move_or_not% == 2 goto due
 
+:set_lett_2
 echo. 
-echo I files verranno copiati nell'HDD collegato alla lettera %DEST%
+echo I files verranno copiati in %DEST%
 echo. 
-pause
+set /p lett_corr= E' corretto? [0] No, devo re-inserire la lettera corretta [1] Si 
+if /i %lett_corr% == 0 (goto set_lett_2) 
 cls
 
 
@@ -472,7 +499,7 @@ if %date_switch% == 1 goto date_on
 
 
 rem ----------------------------------------------------------------------------------
-rem Date off
+rem Backup custom - SENZA data nel nome
 rem ----------------------------------------------------------------------------------
 
 :date_off
@@ -504,12 +531,12 @@ cls
 echo. 
 if not defined dir_choice set /p dir_choice= Vuoi riguardare la guida e le scorciatoie premi il tasto [1] altrimenti [0] 
 if %dir_choice% == 1 goto sei
-if %dir_choice% == 0 goto xcl_no_date 
+if %dir_choice% == 0 goto exclude_folder_no_date 
 
 :xcl_no_date
 echo.
 set /p dir_look= Vuoi dare un occhiata alle cartelle? No [0] Si [1]
-if %dir_look% == 0 goto xcls 
+if %dir_look% == 0 goto exclude_folder_no_date 
 if %dir_look% == 1 goto dir_look_yes
 
 :dir_look_yes
@@ -530,7 +557,7 @@ echo.
 
 set /p choice_dir= Inserisci il numero corrispondente 
 
-if %choice_dirk% == 0 goto xcls 
+if %choice_dirk% == 0 goto exclude_folder_no_date 
 if %choice_dir% == 1 set choice_dir_set=%des%
 if %choice_dir% == 2 set choice_dir_set=%doc%
 if %choice_dir% == 3 set choice_dir_set=%dow%
@@ -545,12 +572,15 @@ echo.
 set /p return_choice=Vuoi dare un occhiata alle altre raccolte [0] oppure continuare [1] 
 
 if %return_choice% == 0 goto dir_look_yes
-if %return_choice% == 1 goto xclsn
+if %return_choice% == 1 goto exclude_folder_no_date
 
-:xclsn
+:exclude_folder_no_date
 
 echo.
 echo Elenca il percorso delle cartelle da escludere dal Backup tra "" e separate da uno spazio se piu' di una
+echo.
+echo Per esempio se voglio escludere la cartella Gatti e la cartella Cani scrivo: "Gatti" "Cani"
+
 
 echo. 
 if not defined directory_excl set /p directory_excl=- Voglio escludere: 
@@ -580,9 +610,6 @@ echo.
 if not defined custom_thread set /p custom_thread= Voglio dedicare un totale di thread uguale a (valore numerico MIN 1 MAX 128):  
 set my_thread=/mt:%custom_thread%
 
-rem .....................................................
-rem No date backup
-rem .....................................................
 
 :default_thread
 echo.
@@ -638,7 +665,7 @@ goto eof
 
 
 rem ----------------------------------------------------------------------------------
-rem Date on
+rem Backup custom - CON data nel nome
 rem ----------------------------------------------------------------------------------
 
 :date_on
@@ -656,7 +683,7 @@ if %date_esclusion% == 1 goto date_dir_exclude
 cls
 echo.
 set /p dir_look= Vuoi dare un occhiata alle cartelle? No [0] Si [1]
-if %dir_look% == 0 goto xcls 
+if %dir_look% == 0 goto exclude_folder_date 
 if %dir_look% == 1 goto dir_look_yes
 
 :dir_look_yes
@@ -677,7 +704,7 @@ echo.
 
 set /p choice_dir= Inserisci il numero corrispondente 
 
-if %choice_dirk% == 0 goto xcls 
+if %choice_dirk% == 0 goto exclude_folder_date 
 if %choice_dir% == 1 set choice_dir_set=%des%
 if %choice_dir% == 2 set choice_dir_set=%doc%
 if %choice_dir% == 3 set choice_dir_set=%dow%
@@ -692,16 +719,17 @@ echo.
 set /p return_choice=Vuoi dare un occhiata alle altre raccolte [0] oppure continuare [1] 
 
 if %return_choice% == 0 goto dir_look_yes
-if %return_choice% == 1 goto xcl
+if %return_choice% == 1 goto exclude_folder_date
 
-:xcl
+:exclude_folder_date
 
 echo.
 echo Elenca il percorso delle cartelle da escludere dal Backup tra "" e separate da uno spazio se piu' di una
+echo Per esempio se voglio escludere le cartelle gatti e cani inserisco: "gatti" "cani"
 
 
 echo. 
-if not defined directory_excl set /p directory_excl=- Voglio escludere: 
+if not defined directory_excl set /p directory_excl= Voglio escludere: 
 set my_directory_excl= /XD %directory_excl%
 goto date_multithread
 
